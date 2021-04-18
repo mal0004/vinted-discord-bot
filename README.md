@@ -4,11 +4,11 @@ Un bot Discord pour Vinted, qui envoie un message lorsqu'une nouvelle annonce es
 
 ## Commande abonnement
 
-![abo](./abonnement.png)
+![abo](./examples/abonnement.png)
 
 ## Exemple notification
 
-![notif](./notif.png)
+![notif](./examples/notif.png)
 
 ## Installation
 
