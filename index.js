@@ -8,6 +8,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 const vinted = require('vinted-api');
+const moment = require('moment');
+moment.locale('fr');
 
 const sync = () => {
 
@@ -31,7 +33,7 @@ const sync = () => {
                     (sub.maxPrice ? parseInt(item.price_numeric) < sub.maxPrice : true)
                     && (sub.size ? item.size === sub.size : true)
                     && (sub.color ? item.color1 === sub.color : true)
-                    && item.createdTimestamp > (lastItemSub - 1000 * 60 * 5)
+                    && item.createdTimestamp > lastItemSub
                     && !alreadySentItems.includes(item.id)
                 );
             if (items.length > 0) {
@@ -43,7 +45,7 @@ const sync = () => {
                         .setURL(`https://www.vinted.fr/${item.path}`)
                         .setImage(item.photos[0].url)
                         .setColor('#008000')
-                        .setDescription('Date publication : ' + item.created_at)
+                        .setDescription('Date publication : ' + moment(new Date(item.createdTimestamp)).fromNow())
                         .addField('Taille', item.size, true)
                         .addField('Prix', item.price, true)
                         .addField('Condition', item.status, true);
@@ -57,6 +59,13 @@ const sync = () => {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+
+    db.all().forEach((entry) => {
+        if (entry.key.startsWith('last_item')) {
+            const subID = entry.key.slice(10, entry.key.length);
+            db.set(`last_item_${subID}`, Date.now());
+        }
+    })
     sync();
     setInterval(sync, 10000);
 });
