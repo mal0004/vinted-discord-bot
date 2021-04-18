@@ -6,7 +6,7 @@ Un bot Discord pour Vinted, qui envoie un message lorsqu'une nouvelle annonce es
 
 ![abo](./examples/abonnement.png)
 
-## Exemple notification
+## Exemple de notification
 
 ![notif](./examples/notif.png)
 
