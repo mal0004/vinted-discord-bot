@@ -1,0 +1,11 @@
+# Node
+node_modules
+
+# Tests
+test.js
+
+# Config
+config.json
+
+# Database
+db.json

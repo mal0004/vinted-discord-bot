@@ -1,0 +1,12 @@
+{
+  "name": "vinted-discord-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Androz2091 <androz2091@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "easy-json-database": "^1.3.0",
+    "vinted-api": "^1.0.0"
+  }
+}
