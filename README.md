@@ -1,0 +1,18 @@
+# Vinted Discord BOT
+
+Un bot Discord pour Vinted, qui envoie un message lorsqu'une nouvelle annonce est publiée (selon certains critères).
+
+## Commande abonnement
+
+![abo](./abonnement.png)
+
+## Exemple notification
+
+![notif](./notif.png)
+
+## Installation
+
+* Installer Node et NPM
+* Installer les dépendances avec `npm install`
+* Renommer le fichier `config.sample.json` en `config.json`
+* Lancer avec `node index.js`
