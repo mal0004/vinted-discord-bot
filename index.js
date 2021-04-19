@@ -87,16 +87,18 @@ client.on('message', (message) => {
             size: null,
             channelID: null
         };
+        const filled = [];
 
         message.reply('bonjour, envoyez maintenant le nom de l\'article dont vous souhaitez recevoir les alertes.')
 
         collector.on('collect', (m) => {
 
-            if (subscription.size && !subscription.channelID) {
+            if (filled.includes('size') && !filled.includes('channelID')) {
                 if (!m.mentions.channels.first()) {
                     m.reply(`veuillez mentionner un salon valide !`);
                 } else {
                     subscription.channelID = m.mentions.channels.first().id;
+                    filled.push('channelID');
                     m.reply(`tout est configuré ! Les notifications arriveront très bientôt :bell:`);
                     const subscriptionID = Math.random().toString(36).substring(7);
                     db.push(`subscriptions`, {
@@ -108,32 +110,37 @@ client.on('message', (message) => {
                 }
             }
 
-            if (subscription.color && !subscription.size) {
+            if (filled.includes('color') && !filled.includes('size')) {
                 const size = m.content === 'non' ? null : m.content;
                 subscription.size = size;
+                filled.push('size');
                 m.reply(`${!size ? 'aucune' : ''} taille enregistrée ! Maintenant, mentionnez le salon dans lequels seront envoyés les résultats !`);
             }
 
-            if (subscription.maxPrice && !subscription.color) {
+            if (filled.includes('maxPrice') && !filled.includes('color')) {
                 const color = m.content === 'non' ? null : m.content;
                 subscription.color = color;
+                filled.push('color');
                 m.reply(`${!color ? 'aucune' : ''} couleur enregistrée ! Maintenant, envoyez la taille de l'article (telle qu'elle est affichée sur Vinted) ou "non".`);
             }
 
-            if (subscription.query && !subscription.maxPrice) {
+            if (filled.includes('query') && !filled.includes('maxPrice')) {
                 let successText;
                 if (m.content === "non") {
                     successText = 'aucun prix maximum défini !';
+                    subscription.maxPrice = null;
                 } else {
                     const price = m.content.endsWith('€') ? parseInt(m.content.slice(0, m.content - 1)) : parseInt(m.content);
                     subscription.maxPrice = price;
                     successText = `prix maximum enregistré (${subscription.maxPrice} euros) ! `;
                 }
+                filled.push('maxPrice');
                 m.reply(`${successText} Maintenant, envoyez la couleur de l'article (telle qu'elle est affichée sur Vinted) ou "non".`);
             }
 
-            if (!subscription.query) {
+            if (!filled.includes('query')) {
                 subscription.query = m.content;
+                filled.push('query');
                 m.reply(`recherche enregistrée ! Maintenant, envoyez le prix maximum de l'annonce (ou "non" pour ne définir aucun prix maximum).`);
             }
 
