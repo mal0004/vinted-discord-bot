@@ -43,12 +43,12 @@ const sync = () => {
                     const embed = new Discord.MessageEmbed()
                         .setTitle(item.title)
                         .setURL(`https://www.vinted.fr/${item.path}`)
-                        .setImage(item.photos[0].url)
+                        .setImage(item.photos[0]?.url)
                         .setColor('#008000')
                         .setDescription('Date publication : ' + moment(new Date(item.createdTimestamp)).fromNow())
-                        .addField('Taille', item.size, true)
-                        .addField('Prix', item.price, true)
-                        .addField('Condition', item.status, true);
+                        .addField('Taille', item.size || 'vide', true)
+                        .addField('Prix', item.price || 'vide', true)
+                        .addField('Condition', item.status || 'vide', true);
                     client.channels.cache.get(sub.channelID)?.send(embed);
                 });
             }
@@ -76,6 +76,32 @@ client.on('message', (message) => {
     if (message.author.bot) return;
     if (message.channel.type !== 'text') return;
     if (!config.adminIDs.includes(message.author.id)) return;
+
+    if (message.content.startsWith('!liste-abonnements')) {
+
+        const abonnements = db.get('subscriptions');
+
+        const embed = new Discord.MessageEmbed()
+        .setColor('RED')
+        .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
+        .setDescription(abonnements.map((abo) => `${abo.query} | ${abo.id} | <#${abo.channelID}>`).join('\n'));
+
+        message.reply('voilà la liste de vos abonnements.', embed);
+
+    }
+
+    if (message.content.startsWith('!suppr-abo')) {
+
+        const ID = message.content.slice(11, message.content.length);
+        if (!ID) return message.reply('vous devez spécifier un ID d\'abonnement valide !');
+
+        const abonnements = db.get('subscriptions')
+        const newAbonnements = abonnements.filter((abo) => abo.id !== ID);
+        db.set('subscriptions', newAbonnements);
+
+        message.reply('tous les abonnements avec cet ID ont été supprimés !');
+
+    }
 
     if (message.content.startsWith('!abonnement')) {
 
