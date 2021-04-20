@@ -50,7 +50,7 @@ const sync = async () => {
                         .setURL(`https://www.vinted.fr/${item.path}`)
                         .setImage(item.photos[0]?.url)
                         .setColor('#008000')
-                        .setDescription('Date publication : ' + moment(new Date(item.createdTimestamp)).fromNow())
+                        .setDescription('Date de publication : ' + moment(new Date(item.createdTimestamp)).fromNow())
                         .addField('Taille', item.size || 'vide', true)
                         .addField('Prix', item.price || 'vide', true)
                         .addField('Condition', item.status || 'vide', true);
@@ -93,20 +93,20 @@ client.on('message', (message) => {
         .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
         .setDescription(abonnements.map((abo) => `${abo.query} | ${abo.id} | <#${abo.channelID}>`).join('\n'));
 
-        message.reply('voilà la liste de vos abonnements.', embed);
+        message.reply('Voilà la liste de vos abonnements.', embed);
 
     }
 
     if (message.content.startsWith('!suppr-abo')) {
 
         const ID = message.content.slice(11, message.content.length);
-        if (!ID) return message.reply('vous devez spécifier un ID d\'abonnement valide !');
+        if (!ID) return message.reply('Vous devez spécifier un ID d\'abonnement valide !');
 
         const abonnements = db.get('subscriptions')
         const newAbonnements = abonnements.filter((abo) => abo.id !== ID);
         db.set('subscriptions', newAbonnements);
 
-        message.reply('tous les abonnements avec cet ID ont été supprimés !');
+        message.reply('Tous les abonnements avec cet ID ont été supprimés !');
 
     }
 
@@ -122,17 +122,17 @@ client.on('message', (message) => {
         };
         const filled = [];
 
-        message.reply('bonjour, envoyez maintenant le nom de l\'article dont vous souhaitez recevoir les alertes.')
+        message.reply('Bonjour, envoyez maintenant le nom de l\'article dont vous souhaitez recevoir les alertes.')
 
         collector.on('collect', (m) => {
 
             if (filled.includes('size') && !filled.includes('channelID')) {
                 if (!m.mentions.channels.first()) {
-                    m.reply(`veuillez mentionner un salon valide !`);
+                    m.reply(`Veuillez mentionner un salon valide !`);
                 } else {
                     subscription.channelID = m.mentions.channels.first().id;
                     filled.push('channelID');
-                    m.reply(`tout est configuré ! Les notifications arriveront très bientôt :bell:`);
+                    m.reply(`Tout est configuré ! Les notifications arriveront très bientôt :bell:`);
                     const subscriptionID = Math.random().toString(36).substring(7);
                     db.push(`subscriptions`, {
                         ...subscription,
@@ -147,7 +147,7 @@ client.on('message', (message) => {
                 const size = m.content === 'non' ? null : m.content;
                 subscription.size = size;
                 filled.push('size');
-                m.reply(`${!size ? 'aucune' : ''} taille enregistrée ! Maintenant, mentionnez le salon dans lequels seront envoyés les résultats !`);
+                m.reply(`${!size ? 'aucune' : ''} taille enregistrée ! Maintenant, mentionnez le salon dans lequel seront envoyés les résultats !`);
             }
 
             if (filled.includes('maxPrice') && !filled.includes('color')) {
@@ -160,12 +160,12 @@ client.on('message', (message) => {
             if (filled.includes('query') && !filled.includes('maxPrice')) {
                 let successText;
                 if (m.content === "non") {
-                    successText = 'aucun prix maximum défini !';
+                    successText = 'Aucun prix maximum défini !';
                     subscription.maxPrice = null;
                 } else {
                     const price = m.content.endsWith('€') ? parseInt(m.content.slice(0, m.content - 1)) : parseInt(m.content);
                     subscription.maxPrice = price;
-                    successText = `prix maximum enregistré (${subscription.maxPrice} euros) ! `;
+                    successText = `Prix maximum enregistré (${subscription.maxPrice} euros) ! `;
                 }
                 filled.push('maxPrice');
                 m.reply(`${successText} Maintenant, envoyez la couleur de l'article (telle qu'elle est affichée sur Vinted) ou "non".`);
@@ -174,7 +174,7 @@ client.on('message', (message) => {
             if (!filled.includes('query')) {
                 subscription.query = m.content;
                 filled.push('query');
-                m.reply(`recherche enregistrée ! Maintenant, envoyez le prix maximum de l'annonce (ou "non" pour ne définir aucun prix maximum).`);
+                m.reply(`Recherche enregistrée ! Maintenant, envoyez le prix maximum de l'annonce (ou "non" pour ne définir aucun prix maximum).`);
             }
 
         });
