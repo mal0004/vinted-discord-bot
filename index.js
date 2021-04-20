@@ -11,14 +11,19 @@ const vinted = require('vinted-api');
 const moment = require('moment');
 moment.locale('fr');
 
+let lastFetchFinished = true;
+
 const sync = () => {
+
+    if (!lastFetchFinished) return;
+    lastFetchFinished = false;
 
     console.log(`${new Date().toISOString()} | Sync is running...`);
 
     const subscriptions = db.get('subscriptions');
 
-    subscriptions.forEach((sub) => {
-        vinted.search(sub.query, {
+    for (let sub of subscriptions) {
+        await vinted.search(sub.query, {
             order: 'newest_first'
         }).then((res) => {
             const lastItemSub = db.get(`last_item_${sub.id}`);
@@ -53,7 +58,9 @@ const sync = () => {
                 });
             }
         });
-    });
+    }
+
+    lastFetchFinished = true;
 
 };
 
