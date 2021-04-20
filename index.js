@@ -90,7 +90,7 @@ client.on('message', (message) => {
 
         const embed = new Discord.MessageEmbed()
         .setColor('RED')
-        .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
+        .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement.`)
         .setDescription(abonnements.map((abo) => `${abo.query} | ${abo.id} | <#${abo.channelID}>`).join('\n'));
 
         message.reply('Voilà la liste de vos abonnements.', embed);
