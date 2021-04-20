@@ -13,7 +13,7 @@ moment.locale('fr');
 
 let lastFetchFinished = true;
 
-const sync = () => {
+const sync = async () => {
 
     if (!lastFetchFinished) return;
     lastFetchFinished = false;
