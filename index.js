@@ -13,17 +13,9 @@ moment.locale('fr');
 
 let lastFetchFinished = true;
 
-const sync = async () => {
-
-    if (!lastFetchFinished) return;
-    lastFetchFinished = false;
-
-    console.log(`${new Date().toISOString()} | Sync is running...`);
-
-    const subscriptions = db.get('subscriptions');
-
-    for (let sub of subscriptions) {
-        await vinted.search(sub.query, {
+const syncSubscription = (sub) => {
+    return new Promise((resolve) => {
+        vinted.search(sub.query, {
             order: 'newest_first'
         }).then((res) => {
             const lastItemSub = db.get(`last_item_${sub.id}`);
@@ -57,10 +49,24 @@ const sync = async () => {
                     client.channels.cache.get(sub.channelID)?.send(embed);
                 });
             }
+            resolve();
         });
-    }
+    })
+};
 
-    lastFetchFinished = true;
+const sync = () => {
+
+    if (!lastFetchFinished) return;
+    lastFetchFinished = false;
+
+    console.log(`${new Date().toISOString()} | Sync is running...`);
+
+    const subscriptions = db.get('subscriptions');
+
+    const promises = subscriptions.map((sub) => syncSubscription(sub));
+    Promise.all(promises).then(() => {
+        lastFetchFinished = true;
+    });
 
 };
 
