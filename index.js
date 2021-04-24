@@ -18,6 +18,11 @@ const syncSubscription = (sub) => {
         vinted.search(sub.query, {
             order: 'newest_first'
         }).then((res) => {
+            if (!res.items) {
+                console.log(res);
+                resolve();
+                return;
+            }
             const lastItemSub = db.get(`last_item_${sub.id}`);
             const alreadySentItems = db.get(`sent_items_${sub.id}`);
             let items = res.items
