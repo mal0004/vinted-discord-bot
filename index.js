@@ -15,9 +15,13 @@ let lastFetchFinished = true;
 
 const syncSubscription = (sub) => {
     return new Promise((resolve) => {
-        vinted.search(sub.query, {
-            order: 'newest_first'
+        const additionalOptions = {};
+        if (sub.catalogID) additionalOptions['catalog_ids'] = sub.catalogID;
+        vinted.search(sub.query || '', {
+            order: 'newest_first',
+            ...additionalOptions
         }).then((res) => {
+            console.log(res.items[0])
             if (!res.items) {
                 console.log(res);
                 resolve();
@@ -129,15 +133,16 @@ client.on('message', (message) => {
             maxPrice: null,
             color: null,
             size: null,
+            catalogID: null,
             channelID: null
         };
         const filled = [];
 
-        message.reply('bonjour, envoyez maintenant le nom de l\'article dont vous souhaitez recevoir les alertes.')
+        message.reply('bonjour, envoyez maintenant le nom de l\'article dont vous souhaitez recevoir les alertes (ou "non").')
 
         collector.on('collect', (m) => {
 
-            if (filled.includes('size') && !filled.includes('channelID')) {
+            if (filled.includes('catalog') && !filled.includes('channelID')) {
                 if (!m.mentions.channels.first()) {
                     m.reply(`veuillez mentionner un salon valide !`);
                 } else {
@@ -154,11 +159,18 @@ client.on('message', (message) => {
                 }
             }
 
+            if (filled.includes('size') && !filled.includes('catalog')) {
+                const catalog = m.content === 'non' ? null : m.content;
+                subscription.catalogID = catalog;
+                filled.push('catalog')
+                m.reply(`${!catalog ? 'aucun' : ''} catalogue enregistré ! Maintenant, mentionnez le salon dans lequels seront envoyés les résultats !`);
+            }
+
             if (filled.includes('color') && !filled.includes('size')) {
                 const size = m.content === 'non' ? null : m.content;
                 subscription.size = size;
                 filled.push('size');
-                m.reply(`${!size ? 'aucune' : ''} taille enregistrée ! Maintenant, mentionnez le salon dans lequels seront envoyés les résultats !`);
+                m.reply(`${!size ? 'aucune' : ''} taille enregistrée ! Maintenant, envoyez le catalogue de l'article (ID trouvable à partir de l'URL de la recherche) ou "non" !`);
             }
 
             if (filled.includes('maxPrice') && !filled.includes('color')) {
@@ -183,9 +195,10 @@ client.on('message', (message) => {
             }
 
             if (!filled.includes('query')) {
-                subscription.query = m.content;
+                const query = m.content === 'non' ? null : m.content;
+                subscription.query = query;
                 filled.push('query');
-                m.reply(`recherche enregistrée ! Maintenant, envoyez le prix maximum de l'annonce (ou "non" pour ne définir aucun prix maximum).`);
+                m.reply(`${!query ? 'aucune' : ''} recherche enregistrée ! Maintenant, envoyez le prix maximum de l'annonce (ou "non" pour ne définir aucun prix maximum).`);
             }
 
         });
