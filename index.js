@@ -21,7 +21,6 @@ const syncSubscription = (sub) => {
             order: 'newest_first',
             ...additionalOptions
         }).then((res) => {
-            console.log(res.items[0])
             if (!res.items) {
                 console.log(res);
                 resolve();
@@ -106,7 +105,7 @@ client.on('message', (message) => {
         const embed = new Discord.MessageEmbed()
         .setColor('RED')
         .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
-        .setDescription(abonnements.map((abo) => `${abo.query} | ${abo.id} | <#${abo.channelID}>`).join('\n'));
+        .setDescription(abonnements.map((abo) => `${abo.query || 'aucune recherche'} | ${abo.id} | <#${abo.channelID}>`).join('\n'));
 
         message.reply('voilà la liste de vos abonnements.', embed);
 
