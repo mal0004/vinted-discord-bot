@@ -106,10 +106,10 @@ tweetnacl@^1.0.3:
   resolved "https://registry.npmjs.org/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
-vinted-api@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/vinted-api/-/vinted-api-1.0.0.tgz#01bbb2098da743bc21f9078518d8aaadfacbe72d"
-  integrity sha512-7qg+9Ri8uS34EsvpgE8zG5YvmE2s4uY/1cYwDDMOIBSkrr2F7i7sQp7CCDESjf8Kl1O1CnHtuOhwsGCM4rbWHA==
+vinted-api@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/vinted-api/-/vinted-api-1.0.2.tgz#e5f2985c7e6bf96e8d04bb2d2400ae06a967e474"
+  integrity sha512-9m4sz0WMLXC4P351z8v9ETbF24gaAabdLqh+6XB90yhhkwks+s1DChV+K9Y/4OIrpI7zorBlLZP2T/b8JMRHdQ==
   dependencies:
     cookie "^0.4.1"
     node-fetch "^2.6.1"
