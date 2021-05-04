@@ -45,6 +45,11 @@ delayed-stream@~1.0.0:
   resolved "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
+detect-indent@~6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/detect-indent/-/detect-indent-6.0.0.tgz#0abd0f549f69fc6659a254fe96786186b6f528fd"
+  integrity sha512-oSyFlqaTHCItVRGK5RmrmjB+CmaMOW7IaNA/kdxqhoa6d17j/5ce9O9eWXmV/KEdRwqpQA+Vqe8a8Bsybu4YnA==
+
 discord.js@^12.5.3:
   version "12.5.3"
   resolved "https://registry.npmjs.org/discord.js/-/discord.js-12.5.3.tgz#56820d473c24320871df9ea0bbc6b462f21cf85c"
@@ -59,6 +64,20 @@ discord.js@^12.5.3:
     tweetnacl "^1.0.3"
     ws "^7.4.4"
 
+docopt@~0.6.2:
+  version "0.6.2"
+  resolved "https://registry.npmjs.org/docopt/-/docopt-0.6.2.tgz#b28e9e2220da5ec49f7ea5bb24a47787405eeb11"
+  integrity sha1-so6eIiDaXsSffqW7JKR3h0Be6xE=
+
+dot-json@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/dot-json/-/dot-json-1.2.2.tgz#7d35abece4aa22aa75a761388953f98495401bcc"
+  integrity sha512-AKL+GsO4wSEU4LU+fAk/PqN4nQ6PB1vT3HpMiZous9xCzK5S0kh4DzfUY0EfU67jsIXLlu0ty71659N9Nmg+Tw==
+  dependencies:
+    detect-indent "~6.0.0"
+    docopt "~0.6.2"
+    underscore-keypath "~0.0.22"
+
 easy-json-database@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/easy-json-database/-/easy-json-database-1.3.0.tgz#de66fd060ed2cdb725fee87d2bcd62c8d2498c4c"
@@ -68,6 +87,11 @@ event-target-shim@^5.0.0:
   version "5.0.1"
   resolved "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
   integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
+
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
 
 mime-db@1.47.0:
   version "1.47.0"
@@ -106,13 +130,34 @@ tweetnacl@^1.0.3:
   resolved "https://registry.npmjs.org/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
-vinted-api@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/vinted-api/-/vinted-api-1.0.2.tgz#e5f2985c7e6bf96e8d04bb2d2400ae06a967e474"
-  integrity sha512-9m4sz0WMLXC4P351z8v9ETbF24gaAabdLqh+6XB90yhhkwks+s1DChV+K9Y/4OIrpI7zorBlLZP2T/b8JMRHdQ==
+underscore-keypath@~0.0.22:
+  version "0.0.22"
+  resolved "https://registry.npmjs.org/underscore-keypath/-/underscore-keypath-0.0.22.tgz#48a528392bb6efc424be1caa56da4b5faccf264d"
+  integrity sha1-SKUoOSu278QkvhyqVtpLX6zPJk0=
+  dependencies:
+    underscore "*"
+
+underscore@*:
+  version "1.13.1"
+  resolved "https://registry.npmjs.org/underscore/-/underscore-1.13.1.tgz#0c1c6bd2df54b6b69f2314066d65b6cde6fcf9d1"
+  integrity sha512-hzSoAVtJF+3ZtiFX0VgfFPHEDRm7Y/QPjGyNo4TVdnDTdft3tr8hEkD25a1jC+TjTuE7tkHGKkhwCgs9dgBB2g==
+
+user-agents@^1.0.642:
+  version "1.0.642"
+  resolved "https://registry.npmjs.org/user-agents/-/user-agents-1.0.642.tgz#ba907719ad619138a317c52feff7cc4b14ccf164"
+  integrity sha512-OFuWd05zQrK2Eq/wsMDy5hxAqGmiO+XmxHomewC5d0Z5cEitk9GMiJouhcB6byjuwxUQCpuYeIAP8dYb7OvBsA==
+  dependencies:
+    dot-json "^1.2.2"
+    lodash.clonedeep "^4.5.0"
+
+vinted-api@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/vinted-api/-/vinted-api-1.0.3.tgz#c3b2f8232c2a67accab497b5bcc6b8ba6dc6b709"
+  integrity sha512-iajpRoaCPPcWiBGca8vepPgtsoE0BoXI4VqnXNhWVt2n7lxPYkbTUxQAPlTUbzkHj8xjQH7z7tk0YfKNXXKpYQ==
   dependencies:
     cookie "^0.4.1"
     node-fetch "^2.6.1"
+    user-agents "^1.0.642"
 
 ws@^7.4.4:
   version "7.4.5"
