@@ -20,7 +20,7 @@ const syncSubscription = (sub) => {
             ...additionalOptions
         }).then((res) => {
             if (!res.items) {
-                console.log(res);
+                console.log('Search done bug got wrong response. Promise resolved.', res);
                 resolve();
                 return;
             }
