@@ -8,8 +8,6 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 const vinted = require('vinted-api');
-const moment = require('moment');
-moment.locale('fr');
 
 let lastFetchFinished = true;
 
@@ -50,7 +48,8 @@ const syncSubscription = (sub) => {
                         .setURL(`https://www.vinted.fr/${item.path}`)
                         .setImage(item.photos[0]?.url)
                         .setColor('#008000')
-                        .setDescription('Date publication : ' + moment(new Date(item.createdTimestamp)).fromNow())
+                        .setTimestamp(item.createdTimestamp)
+                        .setFooter('Date Publication')
                         .addField('Taille', item.size || 'vide', true)
                         .addField('Prix', item.price || 'vide', true)
                         .addField('Condition', item.status || 'vide', true);
