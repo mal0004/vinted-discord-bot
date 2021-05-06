@@ -56,7 +56,7 @@ const syncSubscription = (sub) => {
                     client.channels.cache.get(sub.channelID)?.send(embed);
                 });
             }
-            console.log('Search done. Promise resolved.');
+            console.log(`Search done (got ${res.items.length} items). Promise resolved.`);
             resolve();
         }).catch((e) => {
             console.error('Search returned an error. Promise resolved.', e);
