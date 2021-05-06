@@ -57,8 +57,8 @@ const syncSubscription = (sub) => {
                 });
             }
             resolve();
-        });
-    })
+        }).catch(() => resolve());
+    });
 };
 
 const sync = () => {
