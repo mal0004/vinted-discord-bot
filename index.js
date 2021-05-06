@@ -56,8 +56,12 @@ const syncSubscription = (sub) => {
                     client.channels.cache.get(sub.channelID)?.send(embed);
                 });
             }
+            console.log('Search done. Promise resolved.');
             resolve();
-        }).catch(() => resolve());
+        }).catch((e) => {
+            console.error('Search returned an error. Promise resolved.', e);
+            resolve();
+        });
     });
 };
 
