@@ -145,10 +145,10 @@ user-agents@^1.0.642:
     dot-json "^1.2.2"
     lodash.clonedeep "^4.5.0"
 
-vinted-api@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/vinted-api/-/vinted-api-1.0.3.tgz#c3b2f8232c2a67accab497b5bcc6b8ba6dc6b709"
-  integrity sha512-iajpRoaCPPcWiBGca8vepPgtsoE0BoXI4VqnXNhWVt2n7lxPYkbTUxQAPlTUbzkHj8xjQH7z7tk0YfKNXXKpYQ==
+vinted-api@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/vinted-api/-/vinted-api-1.0.4.tgz#a759f057083c334a394bf95d912bf3edfde4737a"
+  integrity sha512-RChZ1ckjrR6/eSv8SOS8ZQuezb9Ejd/0i6dcQkSnRxN+FWMdhIrk1oXz+2KyDXIIGNmcklQFQnw0lMCS9OjzxA==
   dependencies:
     cookie "^0.4.1"
     node-fetch "^2.6.1"
