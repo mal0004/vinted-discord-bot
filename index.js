@@ -109,7 +109,7 @@ client.on('message', (message) => {
         abonnements.forEach((abo) => {
             const content = `${abo.query || 'aucune recherche'} | ${abo.id} | <#${abo.channelID}>`;
             const lastChunk = chunks.shift() || [];
-            if ((lastChunk.join('\n').length + content) > 1024) {
+            if ((lastChunk.join('\n').length + content.length) > 1024) {
                 chunks.push([ content ]);
             } else {
                 lastChunk.push(content);
