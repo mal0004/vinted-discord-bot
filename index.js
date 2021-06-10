@@ -104,13 +104,29 @@ client.on('message', (message) => {
     if (message.content.startsWith('!liste-abonnements')) {
 
         const abonnements = db.get('subscriptions');
+        const chunks = [];
 
-        const embed = new Discord.MessageEmbed()
-        .setColor('RED')
-        .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
-        .setDescription(abonnements.map((abo) => `${abo.query || 'aucune recherche'} | ${abo.id} | <#${abo.channelID}>`).join('\n'));
+        abonnements.forEach((abo) => {
+            const content = `${abo.query || 'aucune recherche'} | ${abo.id} | <#${abo.channelID}>`;
+            const lastChunk = chunks.shift() || [];
+            if ((lastChunk.join('\n').length + content) > 1024) {
+                chunks.push([ content ]);
+            } else {
+                lastChunk.push(content);
+                chunks.push(lastChunk);
+            }
+        });
 
-        message.reply('voilà la liste de vos abonnements.', embed);
+        message.reply('voilà la liste de vos abonnements.');
+
+        chunks.forEach((chunk) => {
+            const embed = new Discord.MessageEmbed()
+            .setColor('RED')
+            .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
+            .setDescription(chunk.join('\n'));
+        
+            message.channel.send(embed);
+        });
 
     }
 
