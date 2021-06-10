@@ -110,6 +110,7 @@ client.on('message', (message) => {
             const content = `${abo.query || 'aucune recherche'} | ${abo.id} | <#${abo.channelID}>`;
             const lastChunk = chunks.shift() || [];
             if ((lastChunk.join('\n').length + content.length) > 1024) {
+                if (lastChunk) chunks.push(lastChunk);
                 chunks.push([ content ]);
             } else {
                 lastChunk.push(content);
