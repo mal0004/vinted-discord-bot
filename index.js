@@ -5,7 +5,45 @@ const db = new Database('./db.json');
 if (!db.has('subscriptions')) db.set('subscriptions', []);
 
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({
+    intents: [Discord.Intents.FLAGS.GUILDS]
+});
+
+const synchronizeSlashCommands = require('discord-sync-commands');
+synchronizeSlashCommands(client, [
+    {
+        name: 'subscribe',
+        description: 'Subscribe to a search URL',
+        options: [
+            {
+                name: 'url',
+                description: 'The URL to subscribe to',
+                type: 3
+            },
+            {
+                name: 'channel',
+                description: 'The channel to send the results to',
+                type: 7
+            }
+        ]
+    },
+    {
+        name: 'unsubscribe',
+        description: 'Unsubscribe from a search URL',
+        options: [
+            {
+                name: 'id',
+                description: 'The ID of the subscription to unsubscribe from',
+                type: 4
+            }
+        ]
+    },
+    {
+        name: 'subscriptions',
+        description: 'List all your subscriptions',
+        options: []
+    }
+], true);
 
 const vinted = require('vinted-api');
 
@@ -13,12 +51,7 @@ let lastFetchFinished = true;
 
 const syncSubscription = (sub) => {
     return new Promise((resolve) => {
-        const additionalOptions = {};
-        if (sub.catalogID) additionalOptions['catalog_ids'] = sub.catalogID;
-        vinted.search(sub.query || '', {
-            order: 'newest_first',
-            ...additionalOptions
-        }).then((res) => {
+        vinted.search(sub.url).then((res) => {
             if (!res.items) {
                 console.log('Search done bug got wrong response. Promise resolved.', res);
                 resolve();
@@ -33,10 +66,7 @@ const syncSubscription = (sub) => {
                 }))
                 .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
                 .filter((item) => 
-                    (sub.maxPrice ? parseInt(item.price_numeric) < sub.maxPrice : true)
-                    && (sub.size ? item.size === sub.size : true)
-                    && (sub.color ? item.color1 === sub.color : true)
-                    && item.createdTimestamp > lastItemSub
+                    item.createdTimestamp > lastItemSub
                     && !alreadySentItems.includes(item.id)
                 );
             if (items.length > 0) {
@@ -94,136 +124,60 @@ client.on('ready', () => {
     setInterval(sync, 10000);
 });
 
-client.on('message', (message) => {
+client.on('interactionCreate', (interaction) => {
 
+    if (!interaction.isCommand()) return;
 
-    if (message.author.bot) return;
-    if (message.channel.type !== 'text') return;
-    if (!config.adminIDs.includes(message.author.id)) return;
-
-    if (message.content.startsWith('!liste-abonnements')) {
-
-        const abonnements = db.get('subscriptions');
-        const chunks = [];
-
-        abonnements.forEach((abo) => {
-            const content = `${abo.query || 'aucune recherche'} | ${abo.id} | <#${abo.channelID}>`;
-            const lastChunk = chunks.shift() || [];
-            if ((lastChunk.join('\n').length + content.length) > 1024) {
-                if (lastChunk) chunks.push(lastChunk);
-                chunks.push([ content ]);
-            } else {
-                lastChunk.push(content);
-                chunks.push(lastChunk);
+    switch (interaction.commandName) {
+        case 'subscribe': {
+            const sub = {
+                id: Math.random().toString(36).substring(7),
+                url: interaction.options.getString('url'),
+                channelID: interaction.options.getChannel('channel').id
             }
-        });
-
-        message.reply('voilà la liste de vos abonnements.');
-
-        chunks.forEach((chunk) => {
-            const embed = new Discord.MessageEmbed()
-            .setColor('RED')
-            .setAuthor(`Tapez !suppr-abo pour supprimer un abonnement`)
-            .setDescription(chunk.join('\n'));
-        
-            message.channel.send(embed);
-        });
-
-    }
-
-    if (message.content.startsWith('!suppr-abo')) {
-
-        const ID = message.content.slice(11, message.content.length);
-        if (!ID) return message.reply('vous devez spécifier un ID d\'abonnement valide !');
-
-        const abonnements = db.get('subscriptions')
-        const newAbonnements = abonnements.filter((abo) => abo.id !== ID);
-        db.set('subscriptions', newAbonnements);
-
-        message.reply('tous les abonnements avec cet ID ont été supprimés !');
-
-    }
-
-    if (message.content.startsWith('!abonnement')) {
-
-        const collector = new Discord.MessageCollector(message.channel, (m) => m.author.id === message.author.id);
-        const subscription = {
-            query: null,
-            maxPrice: null,
-            color: null,
-            size: null,
-            catalogID: null,
-            channelID: null
-        };
-        const filled = [];
-
-        message.reply('bonjour, envoyez maintenant le nom de l\'article dont vous souhaitez recevoir les alertes (ou "non").')
-
-        collector.on('collect', (m) => {
-
-            if (filled.includes('catalog') && !filled.includes('channelID')) {
-                if (!m.mentions.channels.first()) {
-                    m.reply(`veuillez mentionner un salon valide !`);
+            db.push('subscriptions', sub);
+            interaction.reply('abonnement créé !');
+            break;
+        }
+        case 'unsubscribe': {
+            const subID = interaction.options.getInteger('id');
+            const abonnements = db.get('subscriptions')
+            const newAbonnements = abonnements.filter((abo) => abo.id !== subID);
+            if (abonnements.length === abonnements.length) {
+                return void interaction.reply('aucun abonnement pour cet ID!');
+            }
+            db.set('subscriptions', newAbonnements);
+            interaction.reply('abonnement supprimé!');
+            break;
+        }
+        case 'subscriptions': {
+            const abonnements = db.get('subscriptions');
+            const chunks = [];
+    
+            abonnements.forEach((abo) => {
+                const content = `${abo.url} | ${abo.id} | <#${abo.channelID}>`;
+                const lastChunk = chunks.shift() || [];
+                if ((lastChunk.join('\n').length + content.length) > 1024) {
+                    if (lastChunk) chunks.push(lastChunk);
+                    chunks.push([ content ]);
                 } else {
-                    subscription.channelID = m.mentions.channels.first().id;
-                    filled.push('channelID');
-                    m.reply(`tout est configuré ! Les notifications arriveront très bientôt :bell:`);
-                    const subscriptionID = Math.random().toString(36).substring(7);
-                    db.push(`subscriptions`, {
-                        ...subscription,
-                        id: subscriptionID
-                    });
-                    db.set(`last_item_${subscriptionID}`, Date.now());
-                    db.set(`sent_items_${subscriptionID}`, []);
+                    lastChunk.push(content);
+                    chunks.push(lastChunk);
                 }
-            }
-
-            if (filled.includes('size') && !filled.includes('catalog')) {
-                const catalog = m.content === 'non' ? null : m.content;
-                subscription.catalogID = catalog;
-                filled.push('catalog')
-                m.reply(`${!catalog ? 'aucun' : ''} catalogue enregistré ! Maintenant, mentionnez le salon dans lequels seront envoyés les résultats !`);
-            }
-
-            if (filled.includes('color') && !filled.includes('size')) {
-                const size = m.content === 'non' ? null : m.content;
-                subscription.size = size;
-                filled.push('size');
-                m.reply(`${!size ? 'aucune' : ''} taille enregistrée ! Maintenant, envoyez le catalogue de l'article (ID trouvable à partir de l'URL de la recherche) ou "non" !`);
-            }
-
-            if (filled.includes('maxPrice') && !filled.includes('color')) {
-                const color = m.content === 'non' ? null : m.content;
-                subscription.color = color;
-                filled.push('color');
-                m.reply(`${!color ? 'aucune' : ''} couleur enregistrée ! Maintenant, envoyez la taille de l'article (telle qu'elle est affichée sur Vinted) ou "non".`);
-            }
-
-            if (filled.includes('query') && !filled.includes('maxPrice')) {
-                let successText;
-                if (m.content === "non") {
-                    successText = 'aucun prix maximum défini !';
-                    subscription.maxPrice = null;
-                } else {
-                    const price = m.content.endsWith('€') ? parseInt(m.content.slice(0, m.content - 1)) : parseInt(m.content);
-                    subscription.maxPrice = price;
-                    successText = `prix maximum enregistré (${subscription.maxPrice} euros) ! `;
-                }
-                filled.push('maxPrice');
-                m.reply(`${successText} Maintenant, envoyez la couleur de l'article (telle qu'elle est affichée sur Vinted) ou "non".`);
-            }
-
-            if (!filled.includes('query')) {
-                const query = m.content === 'non' ? null : m.content;
-                subscription.query = query;
-                filled.push('query');
-                m.reply(`${!query ? 'aucune' : ''} recherche enregistrée ! Maintenant, envoyez le prix maximum de l'annonce (ou "non" pour ne définir aucun prix maximum).`);
-            }
-
-        });
-
+            });
+    
+            interaction.reply('voilà la liste de vos abonnements.');
+    
+            chunks.forEach((chunk) => {
+                const embed = new Discord.MessageEmbed()
+                .setColor('RED')
+                .setAuthor(`Tapez !unsubscribe pour supprimer un abonnement`)
+                .setDescription(chunk.join('\n'));
+            
+                interaction.channel.send(embed);
+            });
+        }
     }
-
 });
 
 client.login(config.token);

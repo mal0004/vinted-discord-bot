@@ -1,4 +1,5 @@
 {
     "token": "TOKEN_BOT",
-    "adminIDs": ["ID_USER_ADMIN"]
+    "adminIDs": ["ID_USER_ADMIN"],
+    "prefix": "!"
 }
