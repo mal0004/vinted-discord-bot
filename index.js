@@ -12,35 +12,38 @@ const client = new Discord.Client({
 const synchronizeSlashCommands = require('discord-sync-commands');
 synchronizeSlashCommands(client, [
     {
-        name: 'subscribe',
-        description: 'Subscribe to a search URL',
+        name: 'abonner',
+        description: 'Abonnez-vous à une URL de recherche',
         options: [
             {
                 name: 'url',
-                description: 'The URL to subscribe to',
-                type: 3
+                description: 'L\'URL de la recherche Vinted',
+                type: 3,
+                required: true
             },
             {
                 name: 'channel',
-                description: 'The channel to send the results to',
-                type: 7
+                description: 'Le salon dans lequel vous souhaitez envoyer les notifications',
+                type: 7,
+                required: true
             }
         ]
     },
     {
-        name: 'unsubscribe',
-        description: 'Unsubscribe from a search URL',
+        name: 'désabonner',
+        description: 'Désabonnez-vous d\'une URL de recherche',
         options: [
             {
                 name: 'id',
-                description: 'The ID of the subscription to unsubscribe from',
-                type: 4
+                description: 'L\'identifiant de l\'abonnement (/abonnements)',
+                type: 3,
+                required: true
             }
         ]
     },
     {
-        name: 'subscriptions',
-        description: 'List all your subscriptions',
+        name: 'abonnements',
+        description: 'Accèdez à la liste de tous vos abonnements',
         options: []
     }
 ], true);
@@ -51,7 +54,9 @@ let lastFetchFinished = true;
 
 const syncSubscription = (sub) => {
     return new Promise((resolve) => {
-        vinted.search(sub.url).then((res) => {
+        vinted.search(sub.url, {
+            newestFirst: true
+        }).then((res) => {
             if (!res.items) {
                 console.log('Search done bug got wrong response. Promise resolved.', res);
                 resolve();
@@ -83,7 +88,7 @@ const syncSubscription = (sub) => {
                         .addField('Taille', item.size || 'vide', true)
                         .addField('Prix', item.price || 'vide', true)
                         .addField('Condition', item.status || 'vide', true);
-                    client.channels.cache.get(sub.channelID)?.send(embed);
+                    client.channels.cache.get(sub.channelID)?.send({ embeds: [embed]});
                 });
             }
             console.log(`Search done (got ${res.items.length} items). Promise resolved.`);
@@ -127,35 +132,39 @@ client.on('ready', () => {
 client.on('interactionCreate', (interaction) => {
 
     if (!interaction.isCommand()) return;
+    if (!config.adminIDs.includes(interaction.user.id)) return void interaction.reply(`:x: Vous ne disposez pas des droits pour effectuer cette action !`);
 
     switch (interaction.commandName) {
-        case 'subscribe': {
+        case 'abonner': {
             const sub = {
                 id: Math.random().toString(36).substring(7),
                 url: interaction.options.getString('url'),
                 channelID: interaction.options.getChannel('channel').id
             }
             db.push('subscriptions', sub);
-            interaction.reply('abonnement créé !');
+            db.set(`last_item_${sub.id}`, Date.now());
+            db.set(`sent_items_${sub.id}`, []);
+            interaction.reply(`:white_check_mark: Votre abonnement a été créé avec succès !\n**URL**: <${sub.url}>\n**Salon**: <#${sub.channelID}>`);
             break;
         }
-        case 'unsubscribe': {
-            const subID = interaction.options.getInteger('id');
-            const abonnements = db.get('subscriptions')
-            const newAbonnements = abonnements.filter((abo) => abo.id !== subID);
-            if (abonnements.length === abonnements.length) {
-                return void interaction.reply('aucun abonnement pour cet ID!');
+        case 'désabonner': {
+            const subID = interaction.options.getString('id');
+            const subscriptions = db.get('subscriptions')
+            const subscription = subscriptions.find((sub) => sub.id === subID);
+            if (!subscription) {
+                return void interaction.reply(':x: Aucun abonnement trouvé pour votre recherche...');
             }
-            db.set('subscriptions', newAbonnements);
-            interaction.reply('abonnement supprimé!');
+            const newSubscriptions = subscriptions.filter((sub) => sub.id !== subID);
+            db.set('subscriptions', newSubscriptions);
+            interaction.reply(`:white_check_mark: Abonnement supprimé avec succès !\n**URL**: <${subscription.url}>\n**Salon**: <#${subscription.channelID}>`);
             break;
         }
-        case 'subscriptions': {
-            const abonnements = db.get('subscriptions');
+        case 'abonnements': {
+            const subscriptions = db.get('subscriptions');
             const chunks = [];
     
-            abonnements.forEach((abo) => {
-                const content = `${abo.url} | ${abo.id} | <#${abo.channelID}>`;
+            subscriptions.forEach((sub) => {
+                const content = `**ID**: ${sub.id}\n**URL**: ${sub.url}\n**Salon**: <#${sub.channelID}>\n`;
                 const lastChunk = chunks.shift() || [];
                 if ((lastChunk.join('\n').length + content.length) > 1024) {
                     if (lastChunk) chunks.push(lastChunk);
@@ -166,15 +175,15 @@ client.on('interactionCreate', (interaction) => {
                 }
             });
     
-            interaction.reply('voilà la liste de vos abonnements.');
+            interaction.reply(`:white_check_mark: **${subscriptions.length}** abonnements sont actifs !`);
     
             chunks.forEach((chunk) => {
                 const embed = new Discord.MessageEmbed()
                 .setColor('RED')
-                .setAuthor(`Tapez !unsubscribe pour supprimer un abonnement`)
+                .setAuthor(`Utilisez la commande /désabonner pour supprimer un abonnement !`)
                 .setDescription(chunk.join('\n'));
             
-                interaction.channel.send(embed);
+                interaction.channel.send({ embeds: [embed] });
             });
         }
     }
