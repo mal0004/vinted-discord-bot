@@ -86,10 +86,10 @@ discord-api-types@^0.22.0:
   resolved "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.22.0.tgz#34dc57fe8e016e5eaac5e393646cd42a7e1ccc2a"
   integrity sha512-l8yD/2zRbZItUQpy7ZxBJwaLX/Bs2TGaCthRppk8Sw24LOIWg12t9JEreezPoYD0SQcC2htNNo27kYEpYW/Srg==
 
-discord-sync-commands@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.npmjs.org/discord-sync-commands/-/discord-sync-commands-0.1.2.tgz#a340ec8322d0f151558a9f850dbbb14bce3defbb"
-  integrity sha512-JdYv+JUsadqqtJf5FQanL7j4NRv71H7G1Tb8xaSdUBB3AK3aw1kFxxNiCvJd6Uav0lBj0/DoGehYQszW/QYLaw==
+discord-sync-commands@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/discord-sync-commands/-/discord-sync-commands-0.2.0.tgz#a8d7c7a7be139ee756c286387c182344767aefb5"
+  integrity sha512-X59B8viLJTm/Nx2XlbBEJrg7USVkERCNsCI07iPjdwemrp+nYfNGs/imqcsw9x5uKyA7QQ1mpv4+s5FBg6tZhw==
   dependencies:
     discord.js discordjs/discord.js#refs/pull/6414/head
 
@@ -107,7 +107,7 @@ discord.js@^13.1.0:
     node-fetch "^2.6.1"
     ws "^7.5.1"
 
-discord.js@discordjs/discord.js#refs/pull/6414/head:
+"discord.js@github:discordjs/discord.js#refs/pull/6414/head":
   version "13.2.0-dev"
   resolved "https://codeload.github.com/discordjs/discord.js/tar.gz/0f12a85f0b95fd4899546635cd460910a9fcf69c"
   dependencies:
