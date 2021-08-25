@@ -46,7 +46,10 @@ synchronizeSlashCommands(client, [
         description: 'Accèdez à la liste de tous vos abonnements',
         options: []
     }
-], true);
+], {
+    debug: true,
+    guildId: config.guildID
+});
 
 const vinted = require('vinted-api');
 
