@@ -14,7 +14,7 @@ Pour s'abonner, entrez n'importe quelle URL Vinted. Le bot déterminera automati
 
 ## Installation
 
-**Je maintiens bénévolement ce bot sur mon temps libre. Pour supporter ce projet, n'hésitez pas à [faire un don](https://paypal.com/andr0z). Si besoin, je suis également disponible pour aider pour l'installation sur [Twitter](https://twitter.com/2091_androz) si besoin.**
+**Je maintiens bénévolement ce bot sur mon temps libre. Pour supporter ce projet, n'hésitez pas à [faire un don](https://paypal.com/andr0z). Si besoin, je suis également disponible pour aider pour l'installation sur [Twitter](https://twitter.com/androz2091) si besoin.**
 
 Prérequis :
 
