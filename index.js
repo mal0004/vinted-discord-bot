@@ -83,7 +83,7 @@ const syncSubscription = (sub) => {
                     db.push(`sent_items_${sub.id}`, item.id);
                     const embed = new Discord.MessageEmbed()
                         .setTitle(item.title)
-                        .setURL(`https://www.vinted.fr/${item.path}`)
+                        .setURL(`https://www.vinted.fr${item.path}`)
                         .setImage(item.photos[0]?.url)
                         .setColor('#008000')
                         .setTimestamp(item.createdTimestamp)
