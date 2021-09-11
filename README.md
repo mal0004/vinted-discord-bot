@@ -10,7 +10,7 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 |---------------------------------------------|---------------------|---------------|
 | Gratuit                                     | ✅                   |               |
 | Recherches avancées                         | ✅                   | ✅             |
-| Vitesse de synchronisation                  | 10s                 | 5s            |
+| Vitesse de synchronisation                  | 15s                 | < 5s            |
 | Utilisation de proxies (pour + de rapidité) |                     | ✅             |
 | Configuration en 3 clics                    |                     | ✅             |
 | Salons avec conseils de professionnels      |                     | ✅             |
