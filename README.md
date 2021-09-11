@@ -4,7 +4,7 @@ Un bot Discord pour Vinted, qui envoie un message lorsqu'une nouvelle annonce es
 
 ## Distrobot.fr
 
-Bien que le bot open source fonctionne parfaitement et soit très rapide, sa configuration peut être laborieuse. C'est pour cela que nous vous proposons également notre service https://distrobot.fr :
+Bien que le bot open source fonctionne parfaitement et soit très rapide, sa configuration et son installation peut être laborieuse. C'est pour cela que nous vous proposons également notre service https://distrobot.fr :
 
 |                                             | **Bot open source** | **Distrobot** |
 |---------------------------------------------|---------------------|---------------|
