@@ -47,8 +47,10 @@ synchronizeSlashCommands(client, [
         options: []
     }
 ], {
-    debug: true,
+    debug: false,
     guildId: config.guildID
+}).then((stats) => {
+    console.log(`🔁 Commandes mises à jour ! ${stats.newCommandCount} commandes créées, ${stats.currentCommandCount} commandes existantes\n`)
 });
 
 const vinted = require('vinted-api');
@@ -57,44 +59,61 @@ let lastFetchFinished = true;
 
 const syncSubscription = (sub) => {
     return new Promise((resolve) => {
-        vinted.search(sub.url, {
-            newestFirst: true
+        vinted.search(sub.url, false, false, {
+            per_page: '10'
         }).then((res) => {
             if (!res.items) {
                 console.log('Search done bug got wrong response. Promise resolved.', res);
                 resolve();
                 return;
             }
-            const lastItemSub = db.get(`last_item_${sub.id}`);
-            const alreadySentItems = db.get(`sent_items_${sub.id}`);
-            let items = res.items
-                .map((item) => ({
-                    ...item,
-                    createdTimestamp: new Date(item.created_at_ts).getTime()
-                }))
-                .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
-                .filter((item) => 
-                    item.createdTimestamp > lastItemSub
-                    && !alreadySentItems.includes(item.id)
-                );
-            if (items.length > 0) {
-                db.set(`last_item_${sub.id}`, items[0].createdTimestamp);
-                items.sort((a, b) => b.createdTimestamp - a.createdTimestamp).forEach((item) => {
-                    db.push(`sent_items_${sub.id}`, item.id);
-                    const embed = new Discord.MessageEmbed()
-                        .setTitle(item.title)
-                        .setURL(`https://www.vinted.fr${item.path}`)
-                        .setImage(item.photos[0]?.url)
-                        .setColor('#008000')
-                        .setTimestamp(item.createdTimestamp)
-                        .setFooter('Date Publication')
-                        .addField('Taille', item.size || 'vide', true)
-                        .addField('Prix', item.price || 'vide', true)
-                        .addField('Condition', item.status || 'vide', true);
-                    client.channels.cache.get(sub.channelID)?.send({ embeds: [embed]});
-                });
+            const isFirstSync = db.get('is_first_sync');
+            const lastItemTimestamp = db.get(`last_item_ts_${sub.id}`);
+            const items = res.items
+                .sort((a, b) => new Date(b.created_at_ts).getTime() - new Date(a.created_at_ts).getTime())
+                .filter((item) => !lastItemTimestamp || new Date(item.created_at_ts) > lastItemTimestamp);
+
+            if (!items.length) return void resolve();
+
+            const newLastItemTimestamp = new Date(items[0].created_at_ts).getTime();
+            if (!lastItemTimestamp || newLastItemTimestamp > lastItemTimestamp) {
+                db.set(`last_item_ts_${sub.id}`, newLastItemTimestamp);
             }
-            console.log(`Search done (got ${res.items.length} items). Promise resolved.`);
+
+            const itemsToSend = ((lastItemTimestamp && !isFirstSync) ? items.reverse() : [items[0]]);
+
+            for (let item of itemsToSend) {
+                const embed = new Discord.MessageEmbed()
+                    .setTitle(item.title)
+                    .setURL(`https://www.vinted.fr${item.path}`)
+                    .setImage(item.photos[0]?.url)
+                    .setColor('#008000')
+                    .setTimestamp(item.createdTimestamp)
+                    .setFooter(`Article lié à la recherche : ${sub.id}`)
+                    .addField('Taille', item.size || 'vide', true)
+                    .addField('Prix', item.price || 'vide', true)
+                    .addField('Condition', item.status || 'vide', true);
+                client.channels.cache.get(sub.channelID)?.send({ embeds: [embed], components: [
+                    new Discord.MessageActionRow()
+                        .addComponents([
+                            new Discord.MessageButton()
+                                .setLabel('Détails')
+                                .setURL(item.url)
+                                .setEmoji('🔎')
+                                .setStyle('LINK'),
+                            new Discord.MessageButton()
+                                .setLabel('Acheter')
+                                .setURL(`https://www.vinted.fr/transaction/buy/new?source_screen=item&transaction%5Bitem_id%5D=${item.id}`)
+                                .setEmoji('💸')
+                                .setStyle('LINK')
+                        ])
+                ] });
+            }
+
+            if (itemsToSend.length > 0) {
+                console.log(`👕 ${itemsToSend.length} ${itemsToSend.length > 1 ? 'nouveaux articles trouvés' : 'nouvel article trouvé'} pour la recherche ${sub.id} !\n`)
+            }
+
             resolve();
         }).catch((e) => {
             console.error('Search returned an error. Promise resolved.', e);
@@ -108,28 +127,45 @@ const sync = () => {
     if (!lastFetchFinished) return;
     lastFetchFinished = false;
 
-    console.log(`${new Date().toISOString()} | Sync is running...`);
+    console.log(`🤖 Synchronisation à Vinted...\n`);
 
     const subscriptions = db.get('subscriptions');
-
     const promises = subscriptions.map((sub) => syncSubscription(sub));
     Promise.all(promises).then(() => {
+        db.set('is_first_sync', false);
         lastFetchFinished = true;
     });
 
 };
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`🔗 Connecté sur le compte de ${client.user.tag} !\n`);
 
-    db.all().forEach((entry) => {
-        if (entry.key.startsWith('last_item')) {
-            const subID = entry.key.slice(10, entry.key.length);
-            db.set(`last_item_${subID}`, Date.now());
-        }
-    })
+    const entries = db.all().filter((e) => e.key !== 'subscriptions' && !e.key.startsWith('last_item_ts'));
+    entries.forEach((e) => {
+        db.delete(e.key);
+    });
+    db.set('is_first_sync', true);
+
+    const messages = [
+        `🕊️ Ce projet libre et gratuit demande du temps. Si vous en avez les moyens, n'hésitez pas à soutenir le développement avec un don ! https://paypal.me/andr0z\n`,
+        `🤟 Le saviez-vous ? Nous proposons notre propre version du bot en ligne 24/24 7/7 sans que vous n'ayez besoin de vous soucier de quoi que ce soit ! https://distrobot.fr\n`
+    ];
+    let idx = 0;
+    const donate = () => console.log(messages[ idx % 2 ]);
+    setTimeout(() => {
+        donate();
+    }, 3000);
+    setInterval(() => {
+        idx++;
+        donate();
+    }, 20000);
+
     sync();
-    setInterval(sync, 10000);
+    setInterval(sync, 15000);
+
+    const { version } = require('./package.json');
+    client.user.setActivity(`Vinted BOT | v${version}`);
 });
 
 client.on('interactionCreate', (interaction) => {
@@ -145,8 +181,7 @@ client.on('interactionCreate', (interaction) => {
                 channelID: interaction.options.getChannel('channel').id
             }
             db.push('subscriptions', sub);
-            db.set(`last_item_${sub.id}`, Date.now());
-            db.set(`sent_items_${sub.id}`, []);
+            db.set(`last_item_ts_${sub.id}`, null);
             interaction.reply(`:white_check_mark: Votre abonnement a été créé avec succès !\n**URL**: <${sub.url}>\n**Salon**: <#${sub.channelID}>`);
             break;
         }
