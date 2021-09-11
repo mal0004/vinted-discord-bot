@@ -16,7 +16,7 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 | Salons avec conseils de professionnels      |                     | ✅             |
 | Soutien du projet                           |                     | ✅             |
 
-![banner](./banner.png)
+[![banner](./banner.png)](https://distrobot.fr)
 
 ## Abonnez-vous...
 
