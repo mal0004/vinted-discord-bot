@@ -8,15 +8,15 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 
 |                                             | **Bot open source** | **Distrobot** |
 |---------------------------------------------|---------------------|---------------|
-| Gratuit                                     | ✅                   |               |
+| Gratuit                                     | ✅                   |  ❌             |
 | Mises à jour régulières                     | ✅                   | ✅             |
 | Recherches avancées                         | ✅                   | ✅             |
 | Vitesse de synchronisation                  | 15s                 | < 5s            |
-| En ligne 24/24 7/7                          |                     | ✅             |
-| Utilisation de proxies (pour + de rapidité) |                     | ✅             |
-| Configuration en 3 clics                    |                     | ✅             |
-| Salons avec conseils de professionnels      |                     | ✅             |
-| Soutien du projet                           |                     | ✅             |
+| En ligne 24/24 7/7                          |  ❌                  | ✅             |
+| Utilisation de proxies (pour + de rapidité) |   ❌                  | ✅             |
+| Configuration en 3 clics                    |   ❌                  | ✅             |
+| Salons avec conseils de professionnels      |   ❌                  | ✅             |
+| Soutien du projet                           |  ❌                   | ✅             |
 
 [![banner](./banner.png)](https://distrobot.fr)
 
