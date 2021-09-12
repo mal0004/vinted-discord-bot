@@ -88,7 +88,7 @@ const syncSubscription = (sub) => {
                     .setURL(`https://www.vinted.fr${item.path}`)
                     .setImage(item.photos[0]?.url)
                     .setColor('#008000')
-                    .setTimestamp(item.createdTimestamp)
+                    .setTimestamp(new Date(item.created_at_ts))
                     .setFooter(`Article lié à la recherche : ${sub.id}`)
                     .addField('Taille', item.size || 'vide', true)
                     .addField('Prix', item.price || 'vide', true)
