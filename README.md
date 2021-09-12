@@ -9,6 +9,7 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 |                                             | **Bot open source** | **Distrobot** |
 |---------------------------------------------|---------------------|---------------|
 | Gratuit                                     | ✅                   |               |
+| Mises à jour régulières                     | ✅                   | ✅             |
 | Recherches avancées                         | ✅                   | ✅             |
 | Vitesse de synchronisation                  | 15s                 | < 5s            |
 | En ligne 24/24 7/7                          |                     | ✅             |
