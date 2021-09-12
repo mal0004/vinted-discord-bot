@@ -60,7 +60,7 @@ let lastFetchFinished = true;
 const syncSubscription = (sub) => {
     return new Promise((resolve) => {
         vinted.search(sub.url, false, false, {
-            per_page: '10'
+            per_page: '20'
         }).then((res) => {
             if (!res.items) {
                 console.log('Search done bug got wrong response. Promise resolved.', res);
