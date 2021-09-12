@@ -8,11 +8,11 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 
 |                                             | **Bot open source** | **Distrobot** |
 |---------------------------------------------|---------------------|---------------|
-| Gratuit                                     | ✅                   |  ❌             |
+| Prix                                          | Gratuit                   |  à partir de 9.90€/mois             |
 | Mises à jour régulières                     | ✅                   | ✅             |
 | Recherches avancées                         | ✅                   | ✅             |
 | Vitesse de synchronisation                  | 15s                 | < 5s            |
-| En ligne 24/24 7/7                          |  ❌                  | ✅             |
+| En ligne 24/24 7/7                          |  ❌  (sauf VPS payant)                | ✅             |
 | Utilisation de proxies (pour + de rapidité) |   ❌                  | ✅             |
 | Configuration en 3 clics                    |   ❌                  | ✅             |
 | Salons avec conseils de professionnels      |   ❌                  | ✅             |
