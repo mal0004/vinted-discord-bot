@@ -2,6 +2,16 @@
 
 Un bot Discord pour Vinted, qui envoie un message lorsqu'une nouvelle annonce est publiée (selon certains critères).
 
+## Abonnez-vous...
+
+Pour s'abonner, entrez n'importe quelle URL Vinted. Le bot déterminera automatiquement les filtres à appliquer aux résultats.
+
+![abo](./examples/abonner.png)
+
+## ...et recevez vos notifications !
+
+![notif](./examples/notif.png)
+
 ## Distrobot.fr
 
 Bien que le bot open source fonctionne parfaitement et soit très rapide, sa configuration et son installation peut être laborieuse. C'est pour cela que nous vous proposons également notre service https://distrobot.fr :
@@ -20,19 +30,9 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 
 [![banner](./banner.png)](https://distrobot.fr)
 
-## Abonnez-vous...
+## Installation du bot open source
 
-Pour s'abonner, entrez n'importe quelle URL Vinted. Le bot déterminera automatiquement les filtres à appliquer aux résultats.
-
-![abo](./examples/abonner.png)
-
-## ...et recevez vos notifications !
-
-![notif](./examples/notif.png)
-
-## Installation
-
-**Je maintiens bénévolement ce bot sur mon temps libre. Pour supporter ce projet, n'hésitez pas à [faire un don](https://paypal.com/andr0z). Si besoin, je suis également disponible pour aider pour l'installation sur [Twitter](https://twitter.com/androz2091) si besoin.**
+**Je maintiens bénévolement ce bot sur mon temps libre. Si besoin, je suis également disponible pour aider pour l'installation sur [Twitter](https://twitter.com/androz2091).**
 
 Prérequis :
 
