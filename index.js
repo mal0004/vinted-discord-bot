@@ -127,6 +127,10 @@ const sync = () => {
     if (!lastFetchFinished) return;
     lastFetchFinished = false;
 
+    setTimeout(() => {
+        lastFetchFinished = true;
+    }, 20_000);
+
     console.log(`🤖 Synchronisation à Vinted...\n`);
 
     const subscriptions = db.get('subscriptions');
@@ -159,7 +163,7 @@ client.on('ready', () => {
     setInterval(() => {
         idx++;
         donate();
-    }, 20000);
+    }, 120_000);
 
     sync();
     setInterval(sync, 15000);
