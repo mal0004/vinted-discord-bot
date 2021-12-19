@@ -1,7 +1,7 @@
 {
   "name": "vinted-discord-bot",
   "version": "2.1.0",
-  "main": "index.js",
+  "main": "dist/ndex.js",
   "author": "Androz2091 <androz2091@gmail.com>",
   "license": "MIT",
   "scripts": {
