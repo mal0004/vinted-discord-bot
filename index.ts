@@ -24,7 +24,7 @@ const syncSubscription = (subscriptionData: Subscription) => {
                 resolve();
                 return;
             }
-            const lastItemTimestamp = subscriptionData.latestItemDate.getTime();
+            const lastItemTimestamp = subscriptionData.latestItemDate?.getTime();
             const items = res.items
                 .sort((a, b) => new Date(b.created_at_ts).getTime() - new Date(a.created_at_ts).getTime())
                 .filter((item) => !lastItemTimestamp || item.created_at_ts > lastItemTimestamp);
