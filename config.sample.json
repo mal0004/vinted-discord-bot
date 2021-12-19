@@ -1,5 +1,8 @@
 {
     "token": "TOKEN_BOT",
     "adminIDs": ["ID_USER_ADMIN"],
-    "guildID": "ID_SERVER"
+    "guildID": "ID_SERVER",
+    "dbName": "vinted",
+    "dbUser": "",
+    "dbPassword": ""
 }
