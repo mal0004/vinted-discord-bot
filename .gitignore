@@ -9,3 +9,6 @@ config.json
 
 # Database
 db.json
+
+# TS
+dist

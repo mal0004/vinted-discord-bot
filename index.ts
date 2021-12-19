@@ -1,65 +1,22 @@
-const config = require('./config.json');
+import config from './config.json';
 
-const Database = require('easy-json-database');
-const db = new Database('./db.json');
-if (!db.has('subscriptions')) db.set('subscriptions', []);
-
-const Discord = require('discord.js');
+import Discord, { TextChannel } from 'discord.js';
 const client = new Discord.Client({
     intents: [Discord.Intents.FLAGS.GUILDS]
 });
 
-const synchronizeSlashCommands = require('discord-sync-commands');
-synchronizeSlashCommands(client, [
-    {
-        name: 'abonner',
-        description: 'Abonnez-vous à une URL de recherche',
-        options: [
-            {
-                name: 'url',
-                description: 'L\'URL de la recherche Vinted',
-                type: 3,
-                required: true
-            },
-            {
-                name: 'channel',
-                description: 'Le salon dans lequel vous souhaitez envoyer les notifications',
-                type: 7,
-                required: true
-            }
-        ]
-    },
-    {
-        name: 'désabonner',
-        description: 'Désabonnez-vous d\'une URL de recherche',
-        options: [
-            {
-                name: 'id',
-                description: 'L\'identifiant de l\'abonnement (/abonnements)',
-                type: 3,
-                required: true
-            }
-        ]
-    },
-    {
-        name: 'abonnements',
-        description: 'Accèdez à la liste de tous vos abonnements',
-        options: []
-    }
-], {
-    debug: false,
-    guildId: config.guildID
-}).then((stats) => {
-    console.log(`🔁 Commandes mises à jour ! ${stats.newCommandCount} commandes créées, ${stats.currentCommandCount} commandes existantes\n`)
-});
+import vinted from 'vinted-api';
+import { initialize, Subscription } from './database';
+import { getConnection } from 'typeorm';
 
-const vinted = require('vinted-api');
-
+let isFirstSync = true;
 let lastFetchFinished = true;
 
-const syncSubscription = (sub) => {
-    return new Promise((resolve) => {
-        vinted.search(sub.url, false, false, {
+initialize();
+
+const syncSubscription = (subscriptionData: Subscription) => {
+    return new Promise<void>((resolve) => {
+        vinted.search(subscriptionData.url, false, false, {
             per_page: '20'
         }).then((res) => {
             if (!res.items) {
@@ -67,17 +24,20 @@ const syncSubscription = (sub) => {
                 resolve();
                 return;
             }
-            const isFirstSync = db.get('is_first_sync');
-            const lastItemTimestamp = db.get(`last_item_ts_${sub.id}`);
+            const lastItemTimestamp = subscriptionData.latestItemDate.getTime();
             const items = res.items
                 .sort((a, b) => new Date(b.created_at_ts).getTime() - new Date(a.created_at_ts).getTime())
-                .filter((item) => !lastItemTimestamp || new Date(item.created_at_ts) > lastItemTimestamp);
+                .filter((item) => !lastItemTimestamp || item.created_at_ts > lastItemTimestamp);
 
             if (!items.length) return void resolve();
 
-            const newLastItemTimestamp = new Date(items[0].created_at_ts).getTime();
-            if (!lastItemTimestamp || newLastItemTimestamp > lastItemTimestamp) {
-                db.set(`last_item_ts_${sub.id}`, newLastItemTimestamp);
+            const newLastItemDate = new Date(items[0].created_at_ts);
+            if (!lastItemTimestamp || newLastItemDate.getTime() > lastItemTimestamp) {
+                getConnection().manager.getRepository(Subscription).update({
+                    id: subscriptionData.id
+                }, {
+                    latestItemDate: newLastItemDate
+                });
             }
 
             const itemsToSend = ((lastItemTimestamp && !isFirstSync) ? items.reverse() : [items[0]]);
@@ -89,11 +49,11 @@ const syncSubscription = (sub) => {
                     .setImage(item.photos[0]?.url)
                     .setColor('#008000')
                     .setTimestamp(new Date(item.created_at_ts))
-                    .setFooter(`Article lié à la recherche : ${sub.id}`)
+                    .setFooter(`Article lié à la recherche : ${subscriptionData.id}`)
                     .addField('Taille', item.size || 'vide', true)
                     .addField('Prix', item.price || 'vide', true)
                     .addField('Condition', item.status || 'vide', true);
-                client.channels.cache.get(sub.channelID)?.send({ embeds: [embed], components: [
+                (client.channels.cache.get(subscriptionData.channelId) as TextChannel).send({ embeds: [embed], components: [
                     new Discord.MessageActionRow()
                         .addComponents([
                             new Discord.MessageButton()
@@ -111,7 +71,7 @@ const syncSubscription = (sub) => {
             }
 
             if (itemsToSend.length > 0) {
-                console.log(`👕 ${itemsToSend.length} ${itemsToSend.length > 1 ? 'nouveaux articles trouvés' : 'nouvel article trouvé'} pour la recherche ${sub.id} !\n`)
+                console.log(`👕 ${itemsToSend.length} ${itemsToSend.length > 1 ? 'nouveaux articles trouvés' : 'nouvel article trouvé'} pour la recherche ${subscriptionData.id} !\n`)
             }
 
             resolve();
@@ -122,7 +82,7 @@ const syncSubscription = (sub) => {
     });
 };
 
-const sync = () => {
+const sync = async () => {
 
     if (!lastFetchFinished) return;
     lastFetchFinished = false;
@@ -133,23 +93,21 @@ const sync = () => {
 
     console.log(`🤖 Synchronisation à Vinted...\n`);
 
-    const subscriptions = db.get('subscriptions');
+    const subscriptions = await getConnection().manager.getRepository(Subscription).find({
+        isActive: true
+    });
     const promises = subscriptions.map((sub) => syncSubscription(sub));
     Promise.all(promises).then(() => {
-        db.set('is_first_sync', false);
+        isFirstSync = false;
         lastFetchFinished = true;
     });
 
 };
 
 client.on('ready', () => {
-    console.log(`🔗 Connecté sur le compte de ${client.user.tag} !\n`);
+    console.log(`🔗 Connecté sur le compte de ${client.user!.tag} !\n`);
 
-    const entries = db.all().filter((e) => e.key !== 'subscriptions' && !e.key.startsWith('last_item_ts'));
-    entries.forEach((e) => {
-        db.delete(e.key);
-    });
-    db.set('is_first_sync', true);
+    isFirstSync = true;
 
     const messages = [
         `🕊️ Ce projet libre et gratuit demande du temps. Si vous en avez les moyens, n'hésitez pas à soutenir le développement avec un don ! https://paypal.me/andr0z\n`,
@@ -169,45 +127,52 @@ client.on('ready', () => {
     setInterval(sync, 15000);
 
     const { version } = require('./package.json');
-    client.user.setActivity(`Vinted BOT | v${version}`);
+    client.user!.setActivity(`Vinted BOT | v${version}`);
 });
 
-client.on('interactionCreate', (interaction) => {
+client.on('interactionCreate', async (interaction) => {
 
     if (!interaction.isCommand()) return;
     if (!config.adminIDs.includes(interaction.user.id)) return void interaction.reply(`:x: Vous ne disposez pas des droits pour effectuer cette action !`);
 
     switch (interaction.commandName) {
         case 'abonner': {
-            const sub = {
-                id: Math.random().toString(36).substring(7),
-                url: interaction.options.getString('url'),
-                channelID: interaction.options.getChannel('channel').id
+            const sub: Partial<Subscription> = {
+                url: interaction.options.getString('url')!,
+                channelId: interaction.options.getChannel('channel')!.id,
+                createdAt: new Date(),
+                isActive: true
             }
-            db.push('subscriptions', sub);
-            db.set(`last_item_ts_${sub.id}`, null);
-            interaction.reply(`:white_check_mark: Votre abonnement a été créé avec succès !\n**URL**: <${sub.url}>\n**Salon**: <#${sub.channelID}>`);
+            getConnection().manager.getRepository(Subscription).save(sub);
+            interaction.reply(`:white_check_mark: Votre abonnement a été créé avec succès !\n**URL**: <${sub.url}>\n**Salon**: <#${sub.channelId}>`);
             break;
         }
         case 'désabonner': {
-            const subID = interaction.options.getString('id');
-            const subscriptions = db.get('subscriptions')
-            const subscription = subscriptions.find((sub) => sub.id === subID);
+            const subID = interaction.options.getString('id')!;
+            const subscription = await getConnection().manager.getRepository(Subscription).findOne({
+                isActive: true,
+                id: parseInt(subID)
+            });
             if (!subscription) {
                 return void interaction.reply(':x: Aucun abonnement trouvé pour votre recherche...');
             }
-            const newSubscriptions = subscriptions.filter((sub) => sub.id !== subID);
-            db.set('subscriptions', newSubscriptions);
-            interaction.reply(`:white_check_mark: Abonnement supprimé avec succès !\n**URL**: <${subscription.url}>\n**Salon**: <#${subscription.channelID}>`);
+            getConnection().manager.getRepository(Subscription).update({
+                id: subscription.id
+            }, {
+                isActive: false
+            });
+            interaction.reply(`:white_check_mark: Abonnement supprimé avec succès !\n**URL**: <${subscription.url}>\n**Salon**: <#${subscription.channelId}>`);
             break;
         }
         case 'abonnements': {
-            const subscriptions = db.get('subscriptions');
-            const chunks = [];
+            const subscriptions = await getConnection().manager.getRepository(Subscription).find({
+                isActive: true
+            });
+            const chunks: string[][] = [[]];
     
             subscriptions.forEach((sub) => {
-                const content = `**ID**: ${sub.id}\n**URL**: ${sub.url}\n**Salon**: <#${sub.channelID}>\n`;
-                const lastChunk = chunks.shift() || [];
+                const content = `**ID**: ${sub.id}\n**URL**: ${sub.url}\n**Salon**: <#${sub.channelId}>\n`;
+                const lastChunk = chunks.shift()!;
                 if ((lastChunk.join('\n').length + content.length) > 1024) {
                     if (lastChunk) chunks.push(lastChunk);
                     chunks.push([ content ]);
@@ -225,7 +190,7 @@ client.on('interactionCreate', (interaction) => {
                 .setAuthor(`Utilisez la commande /désabonner pour supprimer un abonnement !`)
                 .setDescription(chunk.join('\n'));
             
-                interaction.channel.send({ embeds: [embed] });
+                interaction.channel!.send({ embeds: [embed] });
             });
         }
     }
