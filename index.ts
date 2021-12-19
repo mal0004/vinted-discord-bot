@@ -126,8 +126,7 @@ client.on('ready', () => {
     sync();
     setInterval(sync, 15000);
 
-    const { version } = require('./package.json');
-    client.user!.setActivity(`Vinted BOT | v${version}`);
+    client.user!.setActivity(`Vinted BOT | v3TS`);
 });
 
 client.on('interactionCreate', async (interaction) => {
