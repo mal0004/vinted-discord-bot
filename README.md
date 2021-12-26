@@ -33,14 +33,3 @@ Bien que le bot open source fonctionne parfaitement et soit très rapide, sa con
 ## Installation du bot open source
 
 **Je maintiens bénévolement ce bot sur mon temps libre. Si besoin, je suis également disponible pour aider pour l'installation sur [Twitter](https://twitter.com/androz2091).**
-
-Prérequis :
-
-* Node.js
-* NPM
-
-Installation :
-
-* Installer les dépendances avec `npm install`
-* Renommer le fichier `config.sample.json` en `config.json`
-* Lancer avec `node index.js`
