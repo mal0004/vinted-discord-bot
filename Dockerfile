@@ -1,4 +1,4 @@
-FROM node
+FROM node:17-alpine3.12
 
 RUN mkdir -p /home/app
 
@@ -10,4 +10,4 @@ RUN yarn install
 
 RUN yarn build
 
-CMD ['node', 'dist/index.js']
+CMD [ "node", "dist/index.js" ]
