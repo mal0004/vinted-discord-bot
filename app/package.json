@@ -5,6 +5,7 @@
   "author": "Androz2091 <androz2091@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node create-db.js && node dist/index.js",
     "build": "tsc"
   },
   "dependencies": {

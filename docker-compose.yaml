@@ -23,7 +23,6 @@ services:
       interval: 10s
       retries: 10
     restart: always
-    command: echo "CREATE DATABASE vinted_bot" > /docker-entrypoint-initdb.d/create_db.sql
     ports:
       - "5432:5432"
     environment:
