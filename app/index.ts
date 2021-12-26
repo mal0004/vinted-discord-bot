@@ -47,12 +47,18 @@ const syncSubscription = (subscriptionData: Subscription) => {
                     .setTitle(item.title)
                     .setURL(`https://www.vinted.fr${item.path}`)
                     .setImage(item.photos[0]?.url)
-                    .setColor('#008000')
+                    .setColor('#09B1BA')
                     .setTimestamp(new Date(item.created_at_ts))
                     .setFooter(`Article lié à la recherche : ${subscriptionData.id}`)
                     .addField('Taille', item.size || 'vide', true)
                     .addField('Prix', item.price || 'vide', true)
-                    .addField('Condition', item.status || 'vide', true);
+                    .addField('Condition', item.status || 'vide', true)
+                    .addField('Vendeur', item.user_login || 'vide', true)
+                    .addField('Note vendeur', `${getReputationStars(item.user.feedback_reputation)} (${(item.user.positive_feedback_count || 0) + (item.user.neutral_feedback_count || 0) + (item.user.negative_feedback_count || 0)})` || 'vide', true)
+                    .addField('Pays & Ville', `:flag_${item.user.country_iso_code.toLowerCase()}: ${item.city}` || 'vide', true)
+                    .addField('Condition', item.status || 'vide', true)
+                    .addField('Taille', item.size || 'vide', true)
+                    .addField('Description', (item.description.length > 1024 ? (item.description.substring(0, 1020) + "...") : item.description) || 'vide', false);
                 (client.channels.cache.get(subscriptionData.channelId) as TextChannel).send({ embeds: [embed], components: [
                     new Discord.MessageActionRow()
                         .addComponents([
@@ -196,3 +202,20 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.login(process.env.VINTED_BOT_TOKEN);
+
+function getReputationStars (reputationPercent: number) {
+    let reputCalc = Math.round(reputationPercent / 0.2);
+    let reputDemiCalc = reputationPercent % 0.2;
+
+    let starsStr = '';
+
+    for (let i = 0; i < reputCalc; i++) {
+        starsStr += ':star:';
+    }
+
+    if (reputDemiCalc !== 0 && reputCalc < 5) {
+        starsStr += ' (+0.5)';
+    }
+
+    return starsStr;
+}
