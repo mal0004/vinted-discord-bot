@@ -7,19 +7,27 @@ services:
     environment:
       VINTED_BOT_ADMIN_IDS: "${VINTED_BOT_ADMIN_IDS}"
       VINTED_BOT_TOKEN: "${VINTED_BOT_TOKEN}"
-      POSTGRES_DB: "${POSTGRES_DB}"
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: vinted_bot
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
     depends_on:
       - postgres
 
   postgres:
     image: postgres:14.1
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: "${POSTGRES_DB}"
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      DB_NAME: vinted_bot
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
 
 #volumes:
