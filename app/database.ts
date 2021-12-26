@@ -1,12 +1,11 @@
 import { Entity, Column, createConnection, Connection, PrimaryGeneratedColumn } from "typeorm";
-import config from './config.json';
 
 export const initialize = () => createConnection({
     type: 'postgres',
     host: 'localhost',
-    database: config.dbName,
-    username: config.dbUser,
-    password: config.dbPassword,
+    database: process.env.POSTGRES_DB,
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
     entities: [Subscription],
     synchronize: true,
 });

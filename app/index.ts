@@ -1,5 +1,3 @@
-import config from './config.json';
-
 import Discord, { TextChannel } from 'discord.js';
 const client = new Discord.Client({
     intents: [Discord.Intents.FLAGS.GUILDS]
@@ -8,6 +6,8 @@ const client = new Discord.Client({
 import vinted from 'vinted-api';
 import { initialize, Subscription } from './database';
 import { getConnection } from 'typeorm';
+
+const adminIDs = process.env.VINTED_BOT_ADMIN_IDS?.split(',')!;
 
 let isFirstSync = true;
 let lastFetchFinished = true;
@@ -132,7 +132,7 @@ client.on('ready', () => {
 client.on('interactionCreate', async (interaction) => {
 
     if (!interaction.isCommand()) return;
-    if (!config.adminIDs.includes(interaction.user.id)) return void interaction.reply(`:x: Vous ne disposez pas des droits pour effectuer cette action !`);
+    if (!adminIDs.includes(interaction.user.id)) return void interaction.reply(`:x: Vous ne disposez pas des droits pour effectuer cette action !`);
 
     switch (interaction.commandName) {
         case 'abonner': {
@@ -195,4 +195,4 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-client.login(config.token);
+client.login(process.env.VINTED_BOT_TOKEN);
