@@ -3,13 +3,15 @@ version: '3.8'
 services:
 
   vinted-discord-bot:
-    image: vinted-discord-bot:3.0.1
+    image: vinted-discord-bot:3.2
     environment:
+      P_NAME: "${P_NAME}"
       VINTED_BOT_ADMIN_IDS: "${VINTED_BOT_ADMIN_IDS}"
       VINTED_BOT_TOKEN: "${VINTED_BOT_TOKEN}"
       POSTGRES_DB: vinted_bot
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
+    restart: always
     depends_on:
       - postgres
 
@@ -21,12 +23,10 @@ services:
       interval: 10s
       retries: 10
     restart: always
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d/
+    command: echo "CREATE DATABASE vinted_bot" > /docker-entrypoint-initdb.d/create_db.sql
     ports:
       - "5432:5432"
     environment:
-      DB_NAME: vinted_bot
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
 

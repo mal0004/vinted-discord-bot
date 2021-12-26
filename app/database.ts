@@ -7,7 +7,7 @@ export const initialize = () => createConnection({
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     entities: [Subscription],
-    synchronize: true,
+    synchronize: true
 });
 
 @Entity()
