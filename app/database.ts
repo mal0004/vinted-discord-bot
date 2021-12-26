@@ -2,7 +2,7 @@ import { Entity, Column, createConnection, Connection, PrimaryGeneratedColumn } 
 
 export const initialize = () => createConnection({
     type: 'postgres',
-    host: `${process.env.P_NAME}_postgres_1`,
+    host: 'postgres',
     database: process.env.POSTGRES_DB,
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
