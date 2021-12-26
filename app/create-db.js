@@ -6,7 +6,7 @@ createConnection({
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
 }).then(async connection => {
-    connection.query('CREATE DATABASE IF NOT EXISTS "vinted_bot"').catch(() => {
+    connection.query('CREATE DATABASE vinted_bot').catch(() => {
         console.log('--> Postgres: Database already exists');
     });
 });
