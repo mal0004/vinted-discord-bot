@@ -50,15 +50,12 @@ const syncSubscription = (subscriptionData: Subscription) => {
                     .setColor('#09B1BA')
                     .setTimestamp(new Date(item.created_at_ts))
                     .setFooter(`Article lié à la recherche : ${subscriptionData.id}`)
-                    .addField('Taille', item.size || 'vide', true)
                     .addField('Prix', item.price || 'vide', true)
                     .addField('Condition', item.status || 'vide', true)
-                    .addField('Vendeur', item.user_login || 'vide', true)
                     .addField('Note vendeur', `${getReputationStars(item.user.feedback_reputation)} (${(item.user.positive_feedback_count || 0) + (item.user.neutral_feedback_count || 0) + (item.user.negative_feedback_count || 0)})` || 'vide', true)
                     .addField('Pays & Ville', `:flag_${item.user.country_iso_code.toLowerCase()}: ${item.city}` || 'vide', true)
                     .addField('Condition', item.status || 'vide', true)
-                    .addField('Taille', item.size || 'vide', true)
-                    .addField('Description', (item.description.length > 1024 ? (item.description.substring(0, 1020) + "...") : item.description) || 'vide', false);
+                    .addField('Taille', item.size || 'vide', true);
                 (client.channels.cache.get(subscriptionData.channelId) as TextChannel).send({ embeds: [embed], components: [
                     new Discord.MessageActionRow()
                         .addComponents([
