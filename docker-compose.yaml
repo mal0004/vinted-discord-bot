@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   vinted-discord-bot:
-    image: vinted-discord-bot:3.9
+    image: vinted-discord-bot:3.10
     environment:
       VINTED_BOT_ADMIN_IDS: "${VINTED_BOT_ADMIN_IDS}"
       VINTED_BOT_TOKEN: "${VINTED_BOT_TOKEN}"
