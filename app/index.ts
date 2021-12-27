@@ -52,10 +52,9 @@ const syncSubscription = (subscriptionData: Subscription) => {
                     .setFooter(`Article lié à la recherche : ${subscriptionData.id}`)
                     .addField('Prix', item.price || 'vide', true)
                     .addField('Condition', item.status || 'vide', true)
+                    .addField('Taille', item.size || 'vide', true)
                     .addField('Note vendeur', `${getReputationStars(item.user.feedback_reputation)} (${(item.user.positive_feedback_count || 0) + (item.user.neutral_feedback_count || 0) + (item.user.negative_feedback_count || 0)})` || 'vide', true)
-                    .addField('Pays & Ville', `:flag_${item.user.country_iso_code.toLowerCase()}: ${item.city}` || 'vide', true)
-                    .addField('Condition', item.status || 'vide', true)
-                    .addField('Taille', item.size || 'vide', true);
+                    .addField('Pays & Ville', `:flag_${item.user.country_iso_code.toLowerCase()}: ${item.city}` || 'vide', true);
                 (client.channels.cache.get(subscriptionData.channelId) as TextChannel).send({ embeds: [embed], components: [
                     new Discord.MessageActionRow()
                         .addComponents([
