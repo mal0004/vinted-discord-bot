@@ -11,7 +11,7 @@ exec(`docker volume ls -q`, (err, stdout, stderr) => {
         console.log(`🐋 Starting ${bot.name}...`);
 
         const start = () => {
-            exec(`VINTED_BOT_ADMIN_IDS=${bot.adminIDs} VINTED_BOT_TOKEN=${bot.token} docker-compose -f docker-compose.yaml -p bot-${bot.name} -d up`, (err, stdout, stderr) => {
+            exec(`BOT=${bot.name} VINTED_BOT_ADMIN_IDS=${bot.adminIDs} VINTED_BOT_TOKEN=${bot.token} docker-compose -f docker-compose.yaml -p bot-${bot.name} up -d`, (err, stdout, stderr) => {
                 if (err) {
                     console.error(`🐋 ${bot.name} failed to start.`);
                     console.error(err);
@@ -20,7 +20,7 @@ exec(`docker volume ls -q`, (err, stdout, stderr) => {
             });
         }
         
-        if (volumes.includes(bot.name)) {
+        if (volumes.includes(`bot-${bot.name}`)) {
             console.log(`📦 ${bot.name} database has been recovered!`);
             start();
         } else {
