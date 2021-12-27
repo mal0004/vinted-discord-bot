@@ -11,7 +11,13 @@ exec(`docker volume ls -q`, (err, stdout, stderr) => {
         console.log(`🐋 Starting ${bot.name}...`);
 
         const start = () => {
-            exec(`VINTED_BOT_ADMIN_IDS=${bot.adminIDs} VINTED_BOT_TOKEN=${bot.token} docker-compose -f docker-compose.yaml -p bot-${bot.name} -d up`);
+            exec(`VINTED_BOT_ADMIN_IDS=${bot.adminIDs} VINTED_BOT_TOKEN=${bot.token} docker-compose -f docker-compose.yaml -p bot-${bot.name} -d up`, (err, stdout, stderr) => {
+                if (err) {
+                    console.error(`🐋 ${bot.name} failed to start.`);
+                    console.error(err);
+                    return;
+                }
+            });
         }
         
         if (volumes.includes(bot.name)) {
