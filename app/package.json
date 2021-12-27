@@ -1,6 +1,6 @@
 {
   "name": "vinted-discord-bot",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "main": "dist/index.js",
   "author": "Androz2091 <androz2091@gmail.com>",
   "license": "MIT",
