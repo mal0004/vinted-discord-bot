@@ -132,7 +132,7 @@ client.on('ready', () => {
     sync();
     setInterval(sync, 15000);
 
-    client.user!.setActivity(`Vinted BOT | v3TS`);
+    client.user!.setActivity(`Vinted BOT | v3 Docker 🐳`);
 });
 
 client.on('interactionCreate', async (interaction) => {

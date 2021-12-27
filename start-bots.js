@@ -17,6 +17,7 @@ exec(`docker volume ls -q`, (err, stdout, stderr) => {
                     console.error(err);
                     return;
                 }
+                console.log(stderr);
             });
         }
         
