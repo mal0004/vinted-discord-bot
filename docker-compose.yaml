@@ -27,6 +27,10 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  - ./postgres-data:/var/lib/postgresql/data
+  pgdata:
+    external:
+      name: bot-${BOT}
