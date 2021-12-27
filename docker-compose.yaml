@@ -22,8 +22,6 @@ services:
       interval: 10s
       retries: 10
     restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
