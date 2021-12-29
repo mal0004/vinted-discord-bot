@@ -47,14 +47,14 @@ const rest = new REST({ version: '9' }).setToken(process.env.VINTED_BOT_TOKEN);
 (async () => {
     try {
 
-        const { data: { id: userId, username } } = await rest.get(
+        const { id: userId, username } = await rest.get(
             Routes.user()
         );
 
         console.log(`👋 Connected as ${username}!`);
 
-        const { data: [ { id: guildId, name: guildName } ] } = await rest.get(
-            Routes.user().guilds()
+        const [ { id: guildId, name: guildName } ] = await rest.get(
+            Routes.userGuilds()
         );
 
         console.log(`💻 Connected to ${guildName}!`);
