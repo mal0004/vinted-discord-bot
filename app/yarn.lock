@@ -2912,10 +2912,10 @@ vali-date@^1.0.0:
   resolved "https://registry.npmjs.org/vali-date/-/vali-date-1.0.0.tgz"
   integrity sha1-G5BKWWCfsyjvB4E4Qgk09rhnCaY=
 
-vinted-api@^2.7.2:
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/vinted-api/-/vinted-api-2.7.2.tgz#cd78a1b55b780a54041e747c233d8a0546ac856d"
-  integrity sha512-8HC3AGh5ER3OlsDPnBkr2ek75ru10nOXU/V97rTHGlv2Q2RCfzdSSWtT0bztMn7iM1AoCJ1R+DB11BXxWNc5iA==
+vinted-api@^2.7.3:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/vinted-api/-/vinted-api-2.7.3.tgz#bfdf9956e4cdc07599c5be14fc397cac508bfd76"
+  integrity sha512-w1VyRHmCRZ68/XcQ9/iMKIRUHpT/5bdpB7VC04FuWVF7/ZQNhyD5uBJ58R9ZhFndFDuRIUDI2DJtIMC67XLDRg==
   dependencies:
     cookie "^0.4.1"
     jest "^27.0.6"
