@@ -26,12 +26,12 @@ const syncSubscription = (subscriptionData: Subscription) => {
             }
             const lastItemTimestamp = subscriptionData.latestItemDate?.getTime();
             const items = res.items
-                .sort((a, b) => new Date(b.created_at_ts).getTime() - new Date(a.created_at_ts).getTime())
-                .filter((item) => !lastItemTimestamp || new Date(item.created_at_ts).getTime() > lastItemTimestamp);
+                .sort((a, b) => new Date(b.photo.high_resolution.timestamp).getTime() - new Date(a.photo.high_resolution.timestamp).getTime())
+                .filter((item) => !lastItemTimestamp || new Date(item.photo.high_resolution.timestamp).getTime() > lastItemTimestamp);
 
             if (!items.length) return void resolve();
 
-            const newLastItemDate = new Date(items[0].created_at_ts);
+            const newLastItemDate = new Date(items[0].photo.high_resolution.timestamp);
             if (!lastItemTimestamp || newLastItemDate.getTime() > lastItemTimestamp) {
                 getConnection().manager.getRepository(Subscription).update({
                     id: subscriptionData.id
@@ -45,16 +45,13 @@ const syncSubscription = (subscriptionData: Subscription) => {
             for (let item of itemsToSend) {
                 const embed = new Discord.MessageEmbed()
                     .setTitle(item.title)
-                    .setURL(`https://www.vinted.fr${item.path}`)
-                    .setImage(item.photos[0]?.url)
+                    .setURL(item.url)
+                    .setImage(item.photo.url)
                     .setColor('#09B1BA')
-                    .setTimestamp(new Date(item.created_at_ts))
+                    .setTimestamp(new Date(item.photo.high_resolution.timestamp))
                     .setFooter(`Article lié à la recherche : ${subscriptionData.id}`)
                     .addField('Prix', item.price || 'vide', true)
-                    .addField('Condition', item.status || 'vide', true)
-                    .addField('Taille', item.size || 'vide', true)
-                    .addField('Note vendeur', `${getReputationStars(item.user.feedback_reputation)} (${(item.user.positive_feedback_count || 0) + (item.user.neutral_feedback_count || 0) + (item.user.negative_feedback_count || 0)})` || 'vide', true)
-                    .addField('Pays & Ville', `:flag_${item.user.country_iso_code.toLowerCase()}: ${item.city}` || 'vide', true);
+                    .addField('Taille', item.size_title || 'vide', true);
                 (client.channels.cache.get(subscriptionData.channelId) as TextChannel).send({ embeds: [embed], components: [
                     new Discord.MessageActionRow()
                         .addComponents([
@@ -198,20 +195,3 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.login(process.env.VINTED_BOT_TOKEN);
-
-function getReputationStars (reputationPercent: number) {
-    let reputCalc = Math.round(reputationPercent / 0.2);
-    let reputDemiCalc = reputationPercent % 0.2;
-
-    let starsStr = '';
-
-    for (let i = 0; i < reputCalc; i++) {
-        starsStr += ':star:';
-    }
-
-    if (reputDemiCalc !== 0 && reputCalc < 5) {
-        starsStr += ' (+0.5)';
-    }
-
-    return starsStr;
-}
