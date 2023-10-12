@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+
+  vinted-discord-bot:
+    image: vinted-discord-bot:3.17
+    environment:
+      VINTED_BOT_ADMIN_IDS: "${VINTED_BOT_ADMIN_IDS}"
+      VINTED_BOT_TOKEN: "${VINTED_BOT_TOKEN}"
+      POSTGRES_DB: vinted_bot
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    restart: always
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14.1
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    external:
+      name: bot-${BOT}
